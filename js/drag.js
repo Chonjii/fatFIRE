@@ -8,15 +8,11 @@ class PhotoDragger {
     constructor() {
         this.photos = document.querySelectorAll('.photo');
         this.activePhoto = null;
-        this.currentX = 0;
-        this.currentY = 0;
-        this.initialX = 0;
-        this.initialY = 0;
-        this.xOffset = 0;
-        this.yOffset = 0;
         this.rotation = 0; // Cache rotation to avoid recalculation
+        this.offsetX = 0; // Mouse offset from element center
+        this.offsetY = 0;
 
-        // Store initial rotations for each photo
+        // Store data for each photo
         this.photoData = new Map();
 
         this.init();
@@ -36,7 +32,8 @@ class PhotoDragger {
             this.photoData.set(photo, {
                 rotation: rotation,
                 translateX: 0,
-                translateY: 0
+                translateY: 0,
+                isDragged: false // Track if photo has been moved
             });
 
             // Mouse events
@@ -55,7 +52,6 @@ class PhotoDragger {
     }
 
     dragStart(e) {
-        // Get the element being dragged
         this.activePhoto = e.currentTarget;
         const photoData = this.photoData.get(this.activePhoto);
 
@@ -68,42 +64,49 @@ class PhotoDragger {
         // Cache the current rotation
         this.rotation = photoData.rotation;
 
-        // Get current position
-        this.xOffset = photoData.translateX;
-        this.yOffset = photoData.translateY;
+        // Get mouse/touch position
+        const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
-        if (e.type === 'touchstart') {
-            this.initialX = e.touches[0].clientX - this.xOffset;
-            this.initialY = e.touches[0].clientY - this.yOffset;
-        } else {
-            this.initialX = e.clientX - this.xOffset;
-            this.initialY = e.clientY - this.yOffset;
-        }
+        // Get current element position (where it actually is on screen)
+        const rect = this.activePhoto.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // Calculate offset from mouse to element center
+        // This keeps the element from jumping - the point where user clicked stays under cursor
+        this.offsetX = clientX - centerX;
+        this.offsetY = clientY - centerY;
     }
 
     drag(e) {
         if (this.activePhoto !== null) {
             e.preventDefault();
 
-            if (e.type === 'touchmove') {
-                this.currentX = e.touches[0].clientX - this.initialX;
-                this.currentY = e.touches[0].clientY - this.initialY;
-            } else {
-                this.currentX = e.clientX - this.initialX;
-                this.currentY = e.clientY - this.initialY;
-            }
+            const photoData = this.photoData.get(this.activePhoto);
 
-            this.xOffset = this.currentX;
-            this.yOffset = this.currentY;
+            // Get current mouse position
+            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+            // Calculate where the element center should be
+            // (mouse position minus the offset we calculated on mousedown)
+            const newCenterX = clientX - this.offsetX;
+            const newCenterY = clientY - this.offsetY;
+
+            // Convert to translate values
+            // Elements are positioned at 50%, 50%, so translate is relative to viewport center
+            const translateX = newCenterX - window.innerWidth / 2;
+            const translateY = newCenterY - window.innerHeight / 2;
 
             // Update cached position
-            const photoData = this.photoData.get(this.activePhoto);
-            photoData.translateX = this.currentX;
-            photoData.translateY = this.currentY;
+            photoData.translateX = translateX;
+            photoData.translateY = translateY;
+            photoData.isDragged = true;
 
-            // Use translate3d for GPU acceleration and cached rotation
+            // Apply transform with GPU acceleration
             const rotationDeg = this.rotation * (180 / Math.PI);
-            this.activePhoto.style.transform = `translate3d(${this.currentX}px, ${this.currentY}px, 0) rotate(${rotationDeg}deg)`;
+            this.activePhoto.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) rotate(${rotationDeg}deg)`;
         }
     }
 
