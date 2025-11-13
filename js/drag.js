@@ -1,6 +1,7 @@
 /**
  * Photo Drag and Drop Functionality
  * Allows users to drag photos around the screen
+ * Optimized for smooth performance
  */
 
 class PhotoDragger {
@@ -13,12 +14,31 @@ class PhotoDragger {
         this.initialY = 0;
         this.xOffset = 0;
         this.yOffset = 0;
+        this.rotation = 0; // Cache rotation to avoid recalculation
+
+        // Store initial rotations for each photo
+        this.photoData = new Map();
 
         this.init();
     }
 
     init() {
         this.photos.forEach(photo => {
+            // Cache initial rotation for each photo
+            const transform = window.getComputedStyle(photo).transform;
+            let rotation = 0;
+
+            if (transform !== 'none') {
+                const matrix = new DOMMatrix(transform);
+                rotation = Math.atan2(matrix.b, matrix.a);
+            }
+
+            this.photoData.set(photo, {
+                rotation: rotation,
+                translateX: 0,
+                translateY: 0
+            });
+
             // Mouse events
             photo.addEventListener('mousedown', this.dragStart.bind(this));
 
@@ -37,6 +57,7 @@ class PhotoDragger {
     dragStart(e) {
         // Get the element being dragged
         this.activePhoto = e.currentTarget;
+        const photoData = this.photoData.get(this.activePhoto);
 
         // Bring to front
         this.bringToFront(this.activePhoto);
@@ -44,22 +65,19 @@ class PhotoDragger {
         // Add dragging class
         this.activePhoto.classList.add('dragging');
 
+        // Cache the current rotation
+        this.rotation = photoData.rotation;
+
+        // Get current position
+        this.xOffset = photoData.translateX;
+        this.yOffset = photoData.translateY;
+
         if (e.type === 'touchstart') {
             this.initialX = e.touches[0].clientX - this.xOffset;
             this.initialY = e.touches[0].clientY - this.yOffset;
         } else {
             this.initialX = e.clientX - this.xOffset;
             this.initialY = e.clientY - this.yOffset;
-        }
-
-        // Get current transform values
-        const transform = window.getComputedStyle(this.activePhoto).transform;
-        if (transform !== 'none') {
-            const matrix = new DOMMatrix(transform);
-            this.xOffset = matrix.m41;
-            this.yOffset = matrix.m42;
-            this.initialX = (e.type === 'touchstart' ? e.touches[0].clientX : e.clientX) - this.xOffset;
-            this.initialY = (e.type === 'touchstart' ? e.touches[0].clientY : e.clientY) - this.yOffset;
         }
     }
 
@@ -78,7 +96,14 @@ class PhotoDragger {
             this.xOffset = this.currentX;
             this.yOffset = this.currentY;
 
-            this.setTranslate(this.currentX, this.currentY, this.activePhoto);
+            // Update cached position
+            const photoData = this.photoData.get(this.activePhoto);
+            photoData.translateX = this.currentX;
+            photoData.translateY = this.currentY;
+
+            // Use translate3d for GPU acceleration and cached rotation
+            const rotationDeg = this.rotation * (180 / Math.PI);
+            this.activePhoto.style.transform = `translate3d(${this.currentX}px, ${this.currentY}px, 0) rotate(${rotationDeg}deg)`;
         }
     }
 
@@ -89,26 +114,11 @@ class PhotoDragger {
         }
     }
 
-    setTranslate(xPos, yPos, el) {
-        // Preserve the original transform rotation
-        const currentTransform = window.getComputedStyle(el).transform;
-        let rotation = '0deg';
-
-        if (currentTransform !== 'none') {
-            const values = currentTransform.split('(')[1].split(')')[0].split(',');
-            const a = values[0];
-            const b = values[1];
-            rotation = Math.round(Math.atan2(b, a) * (180/Math.PI)) + 'deg';
-        }
-
-        el.style.transform = `translate(${xPos}px, ${yPos}px) rotate(${rotation})`;
-    }
-
     bringToFront(el) {
         // Get all photos and find max z-index
         let maxZ = 0;
         this.photos.forEach(photo => {
-            const z = parseInt(window.getComputedStyle(photo).zIndex) || 0;
+            const z = parseInt(photo.style.zIndex) || parseInt(window.getComputedStyle(photo).zIndex) || 0;
             if (z > maxZ) maxZ = z;
         });
 
