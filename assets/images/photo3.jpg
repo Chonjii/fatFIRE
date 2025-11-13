@@ -1,0 +1,7 @@
+<svg width="400" height="500" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="500" fill="#FFD93D"/>
+  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="48" fill="white" text-anchor="middle" dominant-baseline="middle">Photo 3</text>
+  <polygon points="200,100 250,180 150,180" fill="white" opacity="0.3"/>
+  <polygon points="120,320 170,400 70,400" fill="white" opacity="0.3"/>
+  <polygon points="280,320 330,400 230,400" fill="white" opacity="0.3"/>
+</svg>
