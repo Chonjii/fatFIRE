@@ -119,6 +119,20 @@ body {
     z-index: 1;
 }
 
+.photo[data-photo="6"] {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(6deg);
+    z-index: 6;
+}
+
+.photo[data-photo="7"] {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-4deg);
+    z-index: 7;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .title {

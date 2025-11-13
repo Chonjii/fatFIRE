@@ -28,6 +28,8 @@ A single-page website featuring draggable photo stacks that users can interact w
 - **Bring to Front**: Dragged photos automatically come to the front
 - **Responsive Design**: Adapts to different screen sizes
 - **Smooth Animations**: Fluid drag interactions with visual feedback
+- **GIF Support**: Animated GIFs and SVGs continue animating while being dragged
+- **All Image Formats**: Supports JPG, PNG, GIF, SVG, WebP, and more
 
 ## Tech Stack
 
@@ -49,11 +51,34 @@ A single-page website featuring draggable photo stacks that users can interact w
 1. Add new photo files to `assets/images/`
 2. Add new photo divs in `index.html`:
    ```html
-   <div class="photo" data-photo="6">
-       <img src="assets/images/photo6.jpg" alt="Photo 6">
+   <div class="photo" data-photo="8">
+       <img src="assets/images/photo8.jpg" alt="Photo 8">
    </div>
    ```
-3. Add initial positioning styles in `css/style.css`
+3. Add initial positioning styles in `css/style.css`:
+   ```css
+   .photo[data-photo="8"] {
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%) rotate(2deg);
+       z-index: 8;
+   }
+   ```
+
+### Using Animated GIFs
+
+The drag functionality works perfectly with animated GIFs! Simply:
+
+1. Add your GIF file to `assets/images/`
+2. Reference it in the HTML:
+   ```html
+   <div class="photo" data-photo="9">
+       <img src="assets/images/your-animation.gif" alt="Animated GIF">
+   </div>
+   ```
+3. The GIF will continue animating smoothly while being dragged!
+
+**Note**: The included `animated-demo.svg` and `animated-demo2.svg` demonstrate animation support. Replace these with your own GIFs or animated content.
 
 ### Changing Colors
 
