@@ -4,6 +4,74 @@
  * Optimized for smooth performance
  */
 
+// ============================================
+// CONFIGURATION: Add your images here!
+// ============================================
+// Just add image filenames to this array - that's it!
+// Supported formats: JPG, PNG, GIF, SVG, WebP, etc.
+const IMAGE_FILES = [
+    'photo1.jpg',
+    'photo2.jpg',
+    'photo3.jpg',
+    'photo4.jpg',
+    'photo5.jpg',
+    'animated-demo.svg',
+    'animated-demo2.svg'
+];
+
+// Path to your images folder
+const IMAGE_PATH = 'assets/images/';
+
+// ============================================
+// Photo Stack Generator
+// ============================================
+class PhotoStackGenerator {
+    constructor(imageFiles, imagePath) {
+        this.imageFiles = imageFiles;
+        this.imagePath = imagePath;
+        this.photoStack = document.getElementById('photoStack');
+    }
+
+    generate() {
+        // Clear existing photos
+        this.photoStack.innerHTML = '';
+
+        // Generate random rotations for variety
+        const rotations = this.generateRotations(this.imageFiles.length);
+
+        // Create photo elements
+        this.imageFiles.forEach((filename, index) => {
+            const photoDiv = document.createElement('div');
+            photoDiv.className = 'photo';
+            photoDiv.setAttribute('data-photo', index + 1);
+            photoDiv.style.top = '50%';
+            photoDiv.style.left = '50%';
+            photoDiv.style.transform = `translate(-50%, -50%) rotate(${rotations[index]}deg)`;
+            photoDiv.style.zIndex = this.imageFiles.length - index;
+
+            const img = document.createElement('img');
+            img.src = `${this.imagePath}${filename}`;
+            img.alt = `Photo ${index + 1}`;
+
+            photoDiv.appendChild(img);
+            this.photoStack.appendChild(photoDiv);
+        });
+    }
+
+    generateRotations(count) {
+        // Generate varied rotation angles between -8 and 8 degrees
+        const rotations = [];
+        for (let i = 0; i < count; i++) {
+            const rotation = Math.floor(Math.random() * 17) - 8; // -8 to 8
+            rotations.push(rotation);
+        }
+        return rotations;
+    }
+}
+
+// ============================================
+// Photo Dragger Class
+// ============================================
 class PhotoDragger {
     constructor() {
         this.photos = document.querySelectorAll('.photo');
@@ -138,8 +206,17 @@ class PhotoDragger {
     }
 }
 
+// ============================================
 // Initialize when DOM is loaded
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
+    // Step 1: Generate photo stack from image list
+    const generator = new PhotoStackGenerator(IMAGE_FILES, IMAGE_PATH);
+    generator.generate();
+
+    // Step 2: Initialize drag functionality
     new PhotoDragger();
-    console.log('Photo dragger initialized! Drag the photos around.');
+
+    console.log(`Photo stack initialized with ${IMAGE_FILES.length} photos!`);
+    console.log('Drag the photos around the screen.');
 });

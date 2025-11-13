@@ -46,39 +46,34 @@ A single-page website featuring draggable photo stacks that users can interact w
 
 ## Customization
 
-### Adding More Photos
+### Adding More Photos (Super Easy!)
 
-1. Add new photo files to `assets/images/`
-2. Add new photo divs in `index.html`:
-   ```html
-   <div class="photo" data-photo="8">
-       <img src="assets/images/photo8.jpg" alt="Photo 8">
-   </div>
+Just two simple steps:
+
+1. **Add your image file** to `assets/images/`
+2. **Add the filename** to the `IMAGE_FILES` array in `js/drag.js`:
+   ```javascript
+   const IMAGE_FILES = [
+       'photo1.jpg',
+       'photo2.jpg',
+       'your-new-image.jpg',  // ← Add your filename here!
+       'cool-animation.gif'    // Works with GIFs too!
+   ];
    ```
-3. Add initial positioning styles in `css/style.css`:
-   ```css
-   .photo[data-photo="8"] {
-       top: 50%;
-       left: 50%;
-       transform: translate(-50%, -50%) rotate(2deg);
-       z-index: 8;
-   }
-   ```
+
+That's it! The photo will automatically appear with random rotation and proper z-index.
+
+**No need to edit HTML or CSS!** The positioning and stacking are handled automatically.
 
 ### Using Animated GIFs
 
-The drag functionality works perfectly with animated GIFs! Simply:
+Animated GIFs work perfectly! They continue animating smoothly while being dragged:
 
-1. Add your GIF file to `assets/images/`
-2. Reference it in the HTML:
-   ```html
-   <div class="photo" data-photo="9">
-       <img src="assets/images/your-animation.gif" alt="Animated GIF">
-   </div>
-   ```
-3. The GIF will continue animating smoothly while being dragged!
+1. Add your GIF to `assets/images/`
+2. Add the filename to `IMAGE_FILES` array
+3. Done! Your GIF will animate while draggable
 
-**Note**: The included `animated-demo.svg` and `animated-demo2.svg` demonstrate animation support. Replace these with your own GIFs or animated content.
+**Supported formats**: JPG, PNG, GIF, SVG, WebP, and more!
 
 ### Changing Colors
 

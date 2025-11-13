@@ -83,55 +83,10 @@ body {
     user-drag: none;
 }
 
-/* Initial positioning for each photo (stacked with slight rotation) */
-.photo[data-photo="1"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-5deg);
-    z-index: 5;
-}
-
-.photo[data-photo="2"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(3deg);
-    z-index: 4;
-}
-
-.photo[data-photo="3"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-2deg);
-    z-index: 3;
-}
-
-.photo[data-photo="4"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(4deg);
-    z-index: 2;
-}
-
-.photo[data-photo="5"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-3deg);
-    z-index: 1;
-}
-
-.photo[data-photo="6"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(6deg);
-    z-index: 6;
-}
-
-.photo[data-photo="7"] {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-4deg);
-    z-index: 7;
-}
+/*
+ * Photo positioning is now handled dynamically by JavaScript
+ * No need to manually add CSS for each photo!
+ */
 
 /* Responsive Design */
 @media (max-width: 768px) {
