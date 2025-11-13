@@ -11,6 +11,8 @@ class PhotoDragger {
         this.rotation = 0; // Cache rotation to avoid recalculation
         this.offsetX = 0; // Mouse offset from element center
         this.offsetY = 0;
+        this.elementWidth = 0; // Cache element dimensions
+        this.elementHeight = 0;
 
         // Store data for each photo
         this.photoData = new Map();
@@ -73,6 +75,10 @@ class PhotoDragger {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
 
+        // Cache element size for drag calculations
+        this.elementWidth = rect.width;
+        this.elementHeight = rect.height;
+
         // Calculate offset from mouse to element center
         // This keeps the element from jumping - the point where user clicked stays under cursor
         this.offsetX = clientX - centerX;
@@ -95,9 +101,11 @@ class PhotoDragger {
             const newCenterY = clientY - this.offsetY;
 
             // Convert to translate values
-            // Elements are positioned at 50%, 50%, so translate is relative to viewport center
-            const translateX = newCenterX - window.innerWidth / 2;
-            const translateY = newCenterY - window.innerHeight / 2;
+            // Elements are positioned at top: 50%, left: 50% (top-left at viewport center)
+            // translate3d moves from that point, so we need to account for element size
+            // to position the center correctly
+            const translateX = newCenterX - window.innerWidth / 2 - this.elementWidth / 2;
+            const translateY = newCenterY - window.innerHeight / 2 - this.elementHeight / 2;
 
             // Update cached position
             photoData.translateX = translateX;
